@@ -1,0 +1,845 @@
+/* Enhanced Payment Styles */
+.payment-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .payment-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+  
+  /* Progress Steps */
+  .payment-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .step-icon.pending {
+    background: #e0e0e0;
+    color: #ffffff;
+  }
+  
+  .step-icon.active {
+    background: #4CAF50;
+    color: white;
+    animation: pulse 2s infinite;
+  }
+  
+  .step-icon.completed {
+    background: #2196F3;
+    color: white;
+    font-size: 20px;
+  }
+  
+  .step-line {
+    width: 60px;
+    height: 2px;
+    background: #e0e0e0;
+    margin: 0 10px;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Progress Bar */
+  .progress-container {
+    margin-bottom: 30px;
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #2196F3);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    position: relative;
+  }
+  
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgb(255, 255, 255), transparent);
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .progress-text {
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* Payment Header */
+  .payment-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: white;
+  }
+  
+  .payment-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .payment-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+  
+  /* Security Badges */
+  .security-badges {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .security-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.95);
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+  }
+  
+  .security-badge:hover {
+    transform: translateY(-2px);
+  }
+  
+  .security-icon {
+    color: #4CAF50;
+    font-size: 16px;
+  }
+  
+  /* Payment Content */
+  .payment-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: rgba(255,255,255,0.95);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+  
+  @media (max-width: 768px) {
+    .payment-content {
+      grid-template-columns: 1fr;
+      gap: 30px;
+      padding: 20px;
+    }
+  }
+  
+  /* Payment Summary */
+  .payment-summary {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #dee2e6;
+    height: fit-content;
+  }
+  
+  .payment-summary h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.3rem;
+  }
+  
+  /* Empty Cart */
+  .empty-cart {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  .empty-cart-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+  }
+  
+  .shop-now-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+  }
+  
+  .shop-now-btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Order Items */
+  .order-items {
+    margin-bottom: 20px;
+  }
+  
+  .order-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: white;
+    transition: all 0.3s ease;
+    animation: slideInUp 0.5s ease;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .order-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .item-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .item-info {
+    flex: 1;
+  }
+  
+  .item-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1rem;
+  }
+  
+  .item-category {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 10px 0;
+  }
+  
+  .item-pricing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+  }
+  
+  .item-price {
+    color: #2196F3;
+  }
+  
+  .item-qty {
+    color: #666;
+  }
+  
+  .item-total {
+    color: #4CAF50;
+    font-size: 1.1rem;
+  }
+  
+  /* Price Breakdown */
+  .price-breakdown {
+    border-top: 2px solid #e0e0e0;
+    padding-top: 20px;
+  }
+  
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  
+  .price-row.savings {
+    color: #4CAF50;
+    font-weight: 600;
+  }
+  
+  .savings-amount {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+  }
+  
+  .price-row.total {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+    border-top: 2px solid #333;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  
+  .free {
+    color: #4CAF50;
+    font-weight: 600;
+  }
+  
+  /* Special Offers */
+  .special-offers {
+    margin-top: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    border-radius: 10px;
+    color: white;
+  }
+  
+  .offer-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+  }
+  
+  .offer-icon {
+    font-size: 1.2rem;
+  }
+  
+  /* Payment Form */
+  .payment-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #dee2e6;
+  }
+  
+  .payment-form h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 1.3rem;
+  }
+  
+  /* Form Groups */
+  .form-group {
+    margin-bottom: 25px;
+  }
+  
+  .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fafafa;
+    color: #000000;
+  }
+  
+  .form-group input:hover,
+  .form-group textarea:hover,
+  .form-group select:hover {
+    color: #000000;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #2196F3;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  .form-group input.valid,
+  .form-group textarea.valid {
+    border-color: #4CAF50;
+    background: #f8fff8;
+    color: #000000;
+  }
+  
+  .form-group input.error,
+  .form-group textarea.error {
+    border-color: #f44336;
+    background: #fff8f8;
+    animation: shake 0.5s ease;
+    color: #000000;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  
+  /* Validation Messages */
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #f44336;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    animation: slideInDown 0.3s ease;
+  }
+  
+  .success-message {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #4CAF50;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    animation: slideInDown 0.3s ease;
+  }
+  
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Payment Method Info Cards */
+  .payment-info {
+    margin: 20px 0;
+  }
+  
+  .info-card {
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+  
+  .info-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .info-card.transfer {
+    border-left-color: #2196F3;
+    background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+  }
+  
+  .info-card.cod {
+    border-left-color: #FF9800;
+    background: linear-gradient(135deg, #fff3e0, #f8f9fa);
+  }
+  
+  .info-card.ewallet {
+    border-left-color: #9C27B0;
+    background: linear-gradient(135deg, #f3e5f5, #f8f9fa);
+  }
+  
+  .info-card.credit {
+    border-left-color: #4CAF50;
+    background: linear-gradient(135deg, #e8f5e8, #f8f9fa);
+  }
+  
+  .info-card h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.1rem;
+  }
+  
+  .info-card p {
+    margin: 0 0 15px 0;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  .info-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .info-benefits span {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  /* Form Actions */
+  .form-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .btn-pay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 18px 30px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-pay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .btn-pay:hover::before {
+    left: 100%;
+  }
+  
+  .btn-pay:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  }
+  
+  .btn-pay:active {
+    transform: translateY(0);
+  }
+  
+  .btn-pay.processing {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    cursor: not-allowed;
+  }
+  
+  .btn-pay.ready {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    animation: readyPulse 2s infinite;
+  }
+  
+  @keyframes readyPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
+  }
+  
+  .btn-pay:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .loading-icon {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .btn-back {
+    text-align: center;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-back:hover {
+    background: #f0f0f0;
+    color: #333;
+    transform: translateX(-5px);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .payment-container {
+      margin: 10px;
+      padding: 30px 20px;
+    }
+    
+    .security-badges {
+      gap: 10px;
+    }
+    
+    .security-badge {
+      padding: 8px 15px;
+      font-size: 13px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .payment-steps {
+      padding: 15px;
+    }
+    
+    .step-item {
+      font-size: 12px;
+    }
+    
+    .step-icon {
+      width: 35px;
+      height: 35px;
+    }
+    
+    .step-line {
+      width: 40px;
+    }
+    
+    .payment-header h1 {
+      font-size: 2rem;
+    }
+    
+    .security-badges {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .payment-summary,
+    .payment-form {
+      padding: 20px;
+    }
+    
+    .order-item {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .item-image {
+      align-self: center;
+    }
+    
+    .item-pricing {
+      justify-content: center;
+      gap: 15px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .payment-container {
+      padding: 20px 15px;
+    }
+    
+    .payment-steps {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .step-line {
+      display: none;
+    }
+    
+    .payment-header h1 {
+      font-size: 1.8rem;
+    }
+    
+    .btn-pay {
+      padding: 15px 20px;
+      font-size: 1rem;
+    }
+    
+    .info-benefits {
+      flex-direction: column;
+    }
+  }
+  
+  /* Dark Mode Support */
+  @media (prefers-color-scheme: dark) {
+    .payment-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .payment-content,
+    .progress-container,
+    .payment-steps {
+      background: rgba(255, 255, 255, 0.393);
+      backdrop-filter: blur(100px); /* efek blur kaca */
+     -webkit-backdrop-filter: blur(10px); /* dukungan untuk Safari */
+    }
+    
+    .payment-summary,
+    .payment-form {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      color: white;
+    }
+    
+    .form-group label,
+    .payment-summary h3,
+    .payment-form h3 {
+      color: white;
+    }
+  }
+  
+  /* Print Styles */
+  @media print {
+    .payment-container {
+      background: white;
+      box-shadow: none;
+      padding: 20px;
+    }
+    
+    .btn-pay,
+    .btn-back,
+    .security-badges {
+      display: none;
+    }
+    
+    .payment-content {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Accessibility Improvements */
+  .payment-container *:focus {
+    outline: 2px solid #2196F3;
+    outline-offset: 2px;
+  }
+  
+  .btn-pay:focus,
+  .btn-back:focus {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+  
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .payment-container {
+      background: white;
+      border: 2px solid black;
+    }
+    
+    .btn-pay {
+      background: black;
+      border: 2px solid black;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      border: 2px solid black;
+    }
+  }
+  
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }

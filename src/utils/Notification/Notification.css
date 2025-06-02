@@ -1,0 +1,158 @@
+.modern-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 320px;
+  max-width: 450px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border-left: 4px solid #0989ff;
+}
+
+.modern-notification.show {
+  transform: translateX(0);
+}
+
+.modern-notification.hide {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.modern-notification.success {
+  border-left-color: #1bc98e;
+}
+
+.modern-notification.error {
+  border-left-color: #e74c3c;
+}
+
+.modern-notification.warning {
+  border-left-color: #f39c12;
+}
+
+.modern-notification.info {
+  border-left-color: #3498db;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 12px;
+}
+
+.notification-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.modern-notification.success .notification-icon {
+  color: #1bc98e;
+  background: rgba(27, 201, 142, 0.1);
+}
+
+.modern-notification.error .notification-icon {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.modern-notification.warning .notification-icon {
+  color: #f39c12;
+  background: rgba(243, 156, 18, 0.1);
+}
+
+.modern-notification.info .notification-icon {
+  color: #3498db;
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.notification-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #95a5a6;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.notification-close:hover {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+}
+
+.notification-progress {
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #0989ff 100%);
+  animation: progressBar 4s linear forwards;
+}
+
+.modern-notification.success .notification-progress {
+  background: linear-gradient(90deg, transparent 0%, #1bc98e 100%);
+}
+
+.modern-notification.error .notification-progress {
+  background: linear-gradient(90deg, transparent 0%, #e74c3c 100%);
+}
+
+.modern-notification.warning .notification-progress {
+  background: linear-gradient(90deg, transparent 0%, #f39c12 100%);
+}
+
+.modern-notification.info .notification-progress {
+  background: linear-gradient(90deg, transparent 0%, #3498db 100%);
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-notification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+/* Multiple notifications */
+.modern-notification:nth-child(2) {
+  top: 90px;
+}
+
+.modern-notification:nth-child(3) {
+  top: 160px;
+}
+
+.modern-notification:nth-child(4) {
+  top: 230px;
+}
