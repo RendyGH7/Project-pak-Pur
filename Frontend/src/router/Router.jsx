@@ -6,6 +6,7 @@ import Cart from "../pages/Cart/Cart";
 import Contact from "../pages/Contact/Contact";
 import Payment from "../pages/Payment/Payment";
 import OrderSuccess from "../pages/OrderSucces/OrderSucces";
+import Orders from "../pages/Orders/Orders";
 import AdminLogin from "../pages/Admin/AdminLogin/AdminLogin";
 import AdminDashboard from "../pages/Admin/AdminDashboard/AdminDashboard";
 import Profil from "../pages/Profile/Profile";
@@ -69,6 +70,7 @@ const Rout = ({
         <Route path="/about" element={<About />} />
         <Route path="/payment" element={<Payment cart={cart} setCart={setCart} />} />
         <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/profil" element={<Profil />} />
