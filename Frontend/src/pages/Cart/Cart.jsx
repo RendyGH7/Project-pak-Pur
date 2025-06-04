@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import Notification from '../../utils/Notification/Notification';
 import { useNotification } from '../../hook/useNotification';
 import './Cart.css'
+
 // Importing images for products
 import ip16Image from "../../assets/images/ip 16.jpg";
 import ip13 from "../../assets/images/ip13.jpg";
@@ -28,27 +29,52 @@ import huawei4 from "../../assets/images/huawei4.jpg";
 import samsung4 from "../../assets/images/samsung4.jpg";
 import ipx from "../../assets/images/ipx.jpg";
 
-const imageMap = {
-  "ip 16.jpg": ip16Image,
-  "ip13.jpg": ip13,
-  "zfold.jpg": zfold,
-  "zfold6.jpg": zfold6,
-  "huawei.jpg": huawei,
-  "oppo2.jpg": oppo2,
-  "samsung.jpg": samsung,
-  "samsung3.jpg": samsung3,
-  "huawei3.jpg": huawei3,
-  "vivo7.jpg": vivo7,
-  "vivo2.jpg": vivo2,
-  "vivo4.jpg": vivo4,
-  "zfold3.jpg": zfold3,
-  "oppo1.jpg": oppo1,
-  "oppo3.jpg": oppo3,
-  "oppo4.jpg": oppo4,
-  "samsung6.jpg": samsung6,
-  "huawei4.jpg": huawei4,
-  "samsung4.jpg": samsung4,
-  "ipx.jpg": ipx
+// Function to get image source
+const getImageSrc = (item) => {
+    // Jika item memiliki properti Img (dari HomeProducts), gunakan langsung
+    if (item.Img) {
+        return item.Img;
+    }
+    
+    // Jika item memiliki properti image sebagai string filename
+    if (item.image && typeof item.image === 'string') {
+        const imageMap = {
+            "ip 16.jpg": ip16Image,
+            "ip13.jpg": ip13,
+            "zfold.jpg": zfold,
+            "zfold6.jpg": zfold6,
+            "huawei.jpg": huawei,
+            "oppo2.jpg": oppo2,
+            "samsung.jpg": samsung,
+            "samsung3.jpg": samsung3,
+            "huawei3.jpg": huawei3,
+            "vivo7.jpg": vivo7,
+            "vivo2.jpg": vivo2,
+            "vivo4.jpg": vivo4,
+            "zfold3.jpg": zfold3,
+            "oppo1.jpg": oppo1,
+            "oppo3.jpg": oppo3,
+            "oppo4.jpg": oppo4,
+            "samsung6.jpg": samsung6,
+            "huawei4.jpg": huawei4,
+            "samsung4.jpg": samsung4,
+            "ipx.jpg": ipx
+        };
+        return imageMap[item.image] || null;
+    }
+    
+    // Default fallback - return null jika tidak ada gambar
+    return null;
+};
+
+// Function to get product title
+const getProductTitle = (item) => {
+    return item.Title || item.name || 'Produk Tanpa Nama';
+};
+
+// Function to get product price
+const getProductPrice = (item) => {
+    return parseFloat(item.Price || item.price || 0);
 };
 
 const Cart = ({cart, setCart}) => {
@@ -61,7 +87,7 @@ const Cart = ({cart, setCart}) => {
     const [recentlyViewed, setRecentlyViewed] = useState([]);
 
     // Calculate totals
-    const subtotal = cart.reduce((price, item) => price + item.qty * item.price, 0);
+    const subtotal = cart.reduce((price, item) => price + item.qty * getProductPrice(item), 0);
     const shipping = subtotal > 100 ? 0 : 15;
     const discount = subtotal > 200 ? subtotal * 0.1 : 0;
     const total = subtotal + shipping - discount;
@@ -116,7 +142,7 @@ const Cart = ({cart, setCart}) => {
             curElm.id === product.id ? {...exist, qty: exist.qty + 1} : curElm
         ));
         animateItem(product.id);
-        showNotification('success', `✨ ${product.name} ditambah! Qty: ${exist.qty + 1}`, 2000);
+        showNotification('success', `✨ ${getProductTitle(product)} ditambah! Qty: ${exist.qty + 1}`, 2000);
     }
 
     // Decrease quantity
@@ -127,7 +153,7 @@ const Cart = ({cart, setCart}) => {
                 curElm.id === product.id ? {...exist, qty: exist.qty - 1} : curElm
             ));
             animateItem(product.id);
-            showNotification('info', `📉 ${product.name} dikurangi! Qty: ${exist.qty - 1}`, 2000);
+            showNotification('info', `📉 ${getProductTitle(product)} dikurangi! Qty: ${exist.qty - 1}`, 2000);
         } else {
             showNotification('warning', '⚠️ Kuantitas minimal adalah 1!', 2000);
         }
@@ -136,21 +162,21 @@ const Cart = ({cart, setCart}) => {
     // Remove product from cart
     const removeproduct = (product) => {
         setCart(cart.filter((x) => x.id !== product.id));
-        showNotification('success', `🗑️ ${product.name} dihapus dari keranjang!`, 3000);
+        showNotification('success', `🗑️ ${getProductTitle(product)} dihapus dari keranjang!`, 3000);
     }
 
     // Save for later
     const saveForLater = (product) => {
         setSavedItems([...savedItems, product]);
         removeproduct(product);
-        showNotification('info', `💾 ${product.name} disimpan untuk nanti!`, 3000);
+        showNotification('info', `💾 ${getProductTitle(product)} disimpan untuk nanti!`, 3000);
     }
 
     // Move back to cart
     const moveToCart = (product) => {
         setCart([...cart, {...product, qty: 1}]);
         setSavedItems(savedItems.filter(item => item.id !== product.id));
-        showNotification('success', `🛒 ${product.name} dipindah ke keranjang!`, 3000);
+        showNotification('success', `🛒 ${getProductTitle(product)} dipindah ke keranjang!`, 3000);
     }
 
     // Clear entire cart
@@ -224,63 +250,73 @@ const Cart = ({cart, setCart}) => {
                                 <h3>Produk ({cart.length} item)</h3>
                             </div>
                             
-                            {cart.map((item) => (
-                                <div 
-                                    key={item.id} 
-                                    className={`cart-item ${animatingItems.has(item.id) ? 'animating' : ''}`}
-                                >
-                                    <div className='item-image'>
-                                        <img src={imageMap[item.image]} alt={item.name} />
-                                        <div className='item-badge'>New</div>
-                                    </div>
-                                    
-                                    <div className='item-details'>
-                                        <div className='item-info'>
-                                            <span className='item-category'>{item.Cat}</span>
-                                            <h4 className='item-title'>{item.name}</h4>
-                                            <p className='item-price'>${item.price}</p>
+                            {cart.map((item) => {
+                                const imageSrc = getImageSrc(item);
+                                const productTitle = getProductTitle(item);
+                                const productPrice = getProductPrice(item);
+                                
+                                return (
+                                    <div 
+                                        key={item.id} 
+                                        className={`cart-item ${animatingItems.has(item.id) ? 'animating' : ''}`}
+                                    >
+                                        <div className='item-image'>
+                                            {imageSrc ? (
+                                                <img src={imageSrc} alt={productTitle} />
+                                            ) : (
+                                                <div className="no-image">Tidak ada gambar</div>
+                                            )}
+                                            <div className='item-badge'>New</div>
                                         </div>
                                         
-                                        <div className='item-actions'>
-                                            <div className='quantity-controls'>
-                                                <button 
-                                                    className='qty-btn decrease' 
-                                                    onClick={() => decqty(item)}
-                                                    disabled={item.qty <= 1}
-                                                >
-                                                    <AiOutlineMinus />
-                                                </button>
-                                                <span className='quantity'>{item.qty}</span>
-                                                <button 
-                                                    className='qty-btn increase' 
-                                                    onClick={() => incqty(item)}
-                                                >
-                                                    <AiOutlinePlus />
-                                                </button>
+                                        <div className='item-details'>
+                                            <div className='item-info'>
+                                                <span className='item-category'>{item.Cat}</span>
+                                                <h4 className='item-title'>{productTitle}</h4>
+                                                <p className='item-price'>${productPrice}</p>
                                             </div>
                                             
-                                            <div className='item-total'>
-                                                <span className='total-price'>${(item.price * item.qty).toFixed(2)}</span>
+                                            <div className='item-actions'>
+                                                <div className='quantity-controls'>
+                                                    <button 
+                                                        className='qty-btn decrease' 
+                                                        onClick={() => decqty(item)}
+                                                        disabled={item.qty <= 1}
+                                                    >
+                                                        <AiOutlineMinus />
+                                                    </button>
+                                                    <span className='quantity'>{item.qty}</span>
+                                                    <button 
+                                                        className='qty-btn increase' 
+                                                        onClick={() => incqty(item)}
+                                                    >
+                                                        <AiOutlinePlus />
+                                                    </button>
+                                                </div>
+                                                
+                                                <div className='item-total'>
+                                                    <span className='total-price'>${(productPrice * item.qty).toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className='item-options'>
+                                                <button 
+                                                    className='save-later-btn'
+                                                    onClick={() => saveForLater(item)}
+                                                >
+                                                    <AiOutlineHeart /> Simpan Nanti
+                                                </button>
+                                                <button 
+                                                    className='remove-btn'
+                                                    onClick={() => removeproduct(item)}
+                                                >
+                                                    <AiOutlineClose /> Hapus
+                                                </button>
                                             </div>
                                         </div>
-                                        
-                                        <div className='item-options'>
-                                            <button 
-                                                className='save-later-btn'
-                                                onClick={() => saveForLater(item)}
-                                            >
-                                                <AiOutlineHeart /> Simpan Nanti
-                                            </button>
-                                            <button 
-                                                className='remove-btn'
-                                                onClick={() => removeproduct(item)}
-                                            >
-                                                <AiOutlineClose /> Hapus
-                                            </button>
-                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         {/* Order Summary */}
@@ -347,21 +383,31 @@ const Cart = ({cart, setCart}) => {
                     <div className='saved-items'>
                         <h3>Disimpan untuk Nanti ({savedItems.length})</h3>
                         <div className='saved-items-grid'>
-                            {savedItems.map((item) => (
-                                <div key={item.id} className='saved-item'>
-                                    <img src={item.Img} alt={item.Title} />
-                                    <div className='saved-item-info'>
-                                        <h5>{item.Title}</h5>
-                                        <p>${item.Price}</p>
-                                        <button 
-                                            className='move-to-cart-btn'
-                                            onClick={() => moveToCart(item)}
-                                        >
-                                            Pindah ke Keranjang
-                                        </button>
+                            {savedItems.map((item) => {
+                                const imageSrc = getImageSrc(item);
+                                const productTitle = getProductTitle(item);
+                                const productPrice = getProductPrice(item);
+                                
+                                return (
+                                    <div key={item.id} className='saved-item'>
+                                        {imageSrc ? (
+                                            <img src={imageSrc} alt={productTitle} />
+                                        ) : (
+                                            <div className="no-image">Tidak ada gambar</div>
+                                        )}
+                                        <div className='saved-item-info'>
+                                            <h5>{productTitle}</h5>
+                                            <p>${productPrice}</p>
+                                            <button 
+                                                className='move-to-cart-btn'
+                                                onClick={() => moveToCart(item)}
+                                            >
+                                                Pindah ke Keranjang
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
