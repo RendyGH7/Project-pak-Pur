@@ -28,31 +28,43 @@ import huawei4 from "../../assets/images/huawei4.jpg";
 import samsung4 from "../../assets/images/samsung4.jpg";
 import ipx from "../../assets/images/ipx.jpg";
 
-
-
 const imageMap = {
-  "ip 16.jpg" : ip16Image,
-  "ip 13.jpg" : ip13,
-  "zffold.jpg" : zfold,
-  "zfold6.jpg" : zfold6,
-  "huawei.jpg" : huawei,
-  "oppo2.jpg" : oppo2,
-  "samsung.jpg" : samsung,
-  "samsung3.jpg" : samsung3,
-  "huawei3.jpg" : huawei3,
-  "vivo7.jpg" : vivo7,
-  "vivo2.jpg" : vivo2,
-  "vivo4.jpg" : vivo4,
-  "zfold3.jpg" : zfold3,
-  "oppo1.jpg" : oppo1,
-  "oppo3.jpg" : oppo3,
-  "oppo4.jpg" : oppo4,
-  "samsung6.jpg" : samsung6,
-  "huawei4.jpg" : huawei4,
-  "samsung4.jpg" : samsung4,
-  "ipx.jpg" : ipx
+  // Menggunakan path file asli dari HomeProducts.jsx
+  [ip16Image]: ip16Image,
+  [ip13]: ip13,
+  [zfold]: zfold, // Fixed typo dari "zffold.jpg"
+  [zfold6]: zfold6,
+  [huawei]: huawei,
+  [oppo2]: oppo2,
+  [samsung]: samsung,
+  [samsung3]: samsung3,
+  [huawei3]: huawei3,
+  [vivo7]: vivo7,
+  [vivo2]: vivo2,
+  [vivo4]: vivo4,
+  [zfold3]: zfold3,
+  [oppo1]: oppo1,
+  [oppo3]: oppo3,
+  [oppo4]: oppo4,
+  [samsung6]: samsung6,
+  [huawei4]: huawei4,
+  [samsung4]: samsung4,
+  [ipx]: ipx
 };
 
+// Function to get image source
+const getImageSrc = (item) => {
+  // Jika item memiliki properti Img (dari HomeProducts), gunakan itu
+  if (item.Img) {
+    return item.Img;
+  }
+  // Jika item memiliki properti image, coba mapping
+  if (item.image && imageMap[item.image]) {
+    return imageMap[item.image];
+  }
+  // Fallback ke gambar default atau null
+  return item.image || item.Img || ip16Image;
+};
 
 const Payment = ({ cart, setCart }) => {
   const [form, setForm] = useState({
@@ -274,14 +286,14 @@ const Payment = ({ cart, setCart }) => {
                 <div className="order-items">
                   {cart.map((item, index) => (
                     <div key={item.id} className="order-item" style={{animationDelay: `${index * 0.1}s`}}>
-                      <img src={imageMap[item.image]} alt={item.name} className="item-image" />
+                      <img src={getImageSrc(item)} alt={item.name || item.Title} className="item-image" />
                       <div className="item-info">
-                        <h4>{item.name}</h4>
+                        <h4>{item.name || item.Title}</h4>
                         <p className="item-category">{item.Cat}</p>
                         <div className="item-pricing">
-                          <span className="item-price">${item.price}</span>
+                          <span className="item-price">${item.price || item.Price}</span>
                           <span className="item-qty">x {item.qty}</span>
-                          <span className="item-total">${item.price * item.qty}</span>
+                          <span className="item-total">${(item.price || item.Price) * item.qty}</span>
                         </div>
                       </div>
                     </div>
