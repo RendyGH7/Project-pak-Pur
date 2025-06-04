@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart, AiOutlineCloseCircle } from "react-icons/ai";
 import { BsEye, BsStarFill, BsStar, BsGrid3X3Gap, BsList, BsFilter } from "react-icons/bs";
 import { FiSearch, FiChevronDown, FiTruck, FiShield, FiAward } from "react-icons/fi";
 import { MdSort, MdViewModule, MdViewList, MdZoomIn, MdVerified } from "react-icons/md";
-import { useAuth0 } from "@auth0/auth0-react";
-import QuickView from "../../components/QuickView/QuickView"; // Import komponen QuickView
+import Homeproduct from "../../components/HomeProduct/HomeProducts";
+import QuickView from "../../components/QuickView/QuickView";
 import Notification from "../../utils/Notification/Notification";
 import { useNotification } from "../../hook/useNotification";
 import "./Product.css";
+
 // Importing images for products
 import ip16Image from "../../assets/images/ip 16.jpg";
 import ip13 from "../../assets/images/ip13.jpg";
@@ -30,29 +31,27 @@ import huawei4 from "../../assets/images/huawei4.jpg";
 import samsung4 from "../../assets/images/samsung4.jpg";
 import ipx from "../../assets/images/ipx.jpg";
 
-
-
 const imageMap = {
-  "ip 16.jpg" : ip16Image,
-  "ip 13.jpg" : ip13,
-  "zffold.jpg" : zfold,
-  "zfold6.jpg" : zfold6,
-  "huawei.jpg" : huawei,
-  "oppo2.jpg" : oppo2,
-  "samsung.jpg" : samsung,
-  "samsung3.jpg" : samsung3,
-  "huawei3.jpg" : huawei3,
-  "vivo7.jpg" : vivo7,
-  "vivo2.jpg" : vivo2,
-  "vivo4.jpg" : vivo4,
-  "zfold3.jpg" : zfold3,
-  "oppo1.jpg" : oppo1,
-  "oppo3.jpg" : oppo3,
-  "oppo4.jpg" : oppo4,
-  "samsung6.jpg" : samsung6,
-  "huawei4.jpg" : huawei4,
-  "samsung4.jpg" : samsung4,
-  "ipx.jpg" : ipx
+  "ip 16.jpg": ip16Image,
+  "ip 13.jpg": ip13,
+  "zffold.jpg": zfold,
+  "zfold6.jpg": zfold6,
+  "huawei.jpg": huawei,
+  "oppo2.jpg": oppo2,
+  "samsung.jpg": samsung,
+  "samsung3.jpg": samsung3,
+  "huawei3.jpg": huawei3,
+  "vivo7.jpg": vivo7,
+  "vivo2.jpg": vivo2,
+  "vivo4.jpg": vivo4,
+  "zfold3.jpg": zfold3,
+  "oppo1.jpg": oppo1,
+  "oppo3.jpg": oppo3,
+  "oppo4.jpg": oppo4,
+  "samsung6.jpg": samsung6,
+  "huawei4.jpg": huawei4,
+  "samsung4.jpg": samsung4,
+  "ipx.jpg": ipx
 };
 
 const Product = ({
@@ -65,18 +64,71 @@ const Product = ({
   addtocart,
 }) => {
   const [products, setProducts] = useState([]);
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
   const { notifications, showNotification, removeNotification } = useNotification();
-  
+
+  // Fungsi untuk menormalisasi data HomeProduct agar sesuai dengan struktur yang diharapkan
+  const normalizeHomeProducts = (homeProducts) => {
+    return homeProducts.map(item => ({
+      id: item.id,
+      name: item.Title,
+      category: item.Cat,
+      price: item.Price,
+      image: item.Img,
+      // Tambahan fields untuk kompatibilitas
+      Title: item.Title,
+      Cat: item.Cat,
+      Price: item.Price,
+      Img: item.Img
+    }));
+  };
+
   useEffect(() => {
-  fetch('http://localhost/Project-pak-Pur/Backend/api/products.php')
-    .then(res => res.json())
-    .then(data => {
-      console.log(data);
-      setProducts(data.products || []);
-      setProduct(data.products || []); // If you want to use setProduct for filtering
-    });
-}, []);
+    // Langkah 1: Set data lokal dari HomeProduct terlebih dahulu
+    const normalizedHomeProducts = normalizeHomeProducts(Homeproduct);
+    setProducts(normalizedHomeProducts);
+    setProduct(normalizedHomeProducts);
+
+    // Langkah 2: Coba fetch data dari backend
+    fetch('http://localhost/Project-pak-Pur/Backend/api/products.php')
+      .then(res => res.json())
+      .then(data => {
+        console.log('Backend data:', data);
+        
+        if (data.products && data.products.length > 0) {
+          // Jika ada data dari backend, gabungkan dengan data lokal
+          const backendProducts = data.products.map(item => ({
+            ...item,
+            // Pastikan struktur konsisten
+            name: item.name || item.Title,
+            category: item.category || item.Cat,
+            price: item.price || item.Price,
+            image: item.image || item.Img
+          }));
+          
+          // Gabungkan data lokal dan backend (hindari duplikasi berdasarkan ID)
+          const combinedProducts = [...normalizedHomeProducts];
+          backendProducts.forEach(backendProduct => {
+            const existingIndex = combinedProducts.findIndex(p => p.id === backendProduct.id);
+            if (existingIndex === -1) {
+              // Tambah produk baru dari backend
+              combinedProducts.push(backendProduct);
+            } else {
+              // Update produk yang sudah ada
+              combinedProducts[existingIndex] = { ...combinedProducts[existingIndex], ...backendProduct };
+            }
+          });
+          
+          setProducts(combinedProducts);
+          setProduct(combinedProducts);
+        }
+        // Jika tidak ada data dari backend, tetap gunakan data lokal
+      })
+      .catch(error => {
+        console.error('Error fetching backend data:', error);
+        console.log('Using local HomeProduct data only');
+        // Tetap gunakan data lokal jika backend error
+      });
+  }, []);
 
   // Enhanced state management
   const [favorites, setFavorites] = useState(new Set());
@@ -90,15 +142,15 @@ const Product = ({
   const [productsPerPage] = useState(12);
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredProduct, setHoveredProduct] = useState(null);
-  const [quickViewProduct, setQuickViewProduct] = useState(null); // State untuk QuickView
-  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false); // State untuk kontrol QuickView modal
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState(new Set());
   const [priceFilter, setPriceFilter] = useState({ min: 0, max: 10000 });
-  
+
   const filterRef = useRef(null);
-  
+
   // Categories with counts
   const categories = [
     { name: "All Products", count: products.length },
@@ -113,7 +165,7 @@ const Product = ({
 
   const handleAddToCart = (product) => {
     addtocart(product);
-    showNotification('success', `🛒 ${product.name} berhasil ditambahkan ke keranjang!`, 3000);
+    showNotification('success', `🛒 ${product.name || product.Title} berhasil ditambahkan ke keranjang!`, 3000);
   };
 
   const toggleFavorite = (productId) => {
@@ -144,15 +196,13 @@ const Product = ({
 
   // Handler untuk QuickView add to cart
   const handleQuickViewAddToCart = (productWithDetails) => {
-    // productWithDetails berisi product, quantity, dan variant
     const { quantity = 1, ...productData } = productWithDetails;
     
-    // Add to cart sebanyak quantity yang dipilih
     for (let i = 0; i < quantity; i++) {
       addtocart(productData);
     }
     
-    showNotification('success', `🛒 ${quantity}x ${productData.Title} berhasil ditambahkan ke keranjang!`, 3000);
+    showNotification('success', `🛒 ${quantity}x ${productData.Title || productData.name} berhasil ditambahkan ke keranjang!`, 3000);
   };
 
   const filtterproduct = (category) => {
@@ -177,9 +227,12 @@ const Product = ({
 
     if (value.length > 0) {
       const suggestions = products
-        .filter(p => p.name && p.name.toLowerCase().includes(value.toLowerCase()))
+        .filter(p => {
+          const name = p.name || p.Title || '';
+          return name.toLowerCase().includes(value.toLowerCase());
+        })
         .slice(0, 5)
-        .map(p => p.name);
+        .map(p => p.name || p.Title);
       setSearchSuggestions(suggestions);
       setShowSuggestions(true);
     } else {
@@ -206,32 +259,36 @@ const Product = ({
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(p =>
-        (p.name && p.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      filtered = filtered.filter(p => {
+        const name = p.name || p.Title || '';
+        const category = p.category || p.Cat || '';
+        return name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               category.toLowerCase().includes(searchTerm.toLowerCase());
+      });
     }
 
     // Price range filter
     filtered = filtered.filter(p => {
-      const price = parseFloat(p.price);
+      const price = parseFloat(p.price || p.Price || 0);
       return price >= priceRange[0] && price <= priceRange[1];
     });
 
     // Brand/category filter
     if (selectedBrands.size > 0) {
-      filtered = filtered.filter(p => selectedBrands.has(p.category));
+      filtered = filtered.filter(p => selectedBrands.has(p.category || p.Cat));
     }
 
     // Sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "price-low":
-          return parseFloat(a.price) - parseFloat(b.price);
+          return parseFloat(a.price || a.Price || 0) - parseFloat(b.price || b.Price || 0);
         case "price-high":
-          return parseFloat(b.price) - parseFloat(a.price);
+          return parseFloat(b.price || b.Price || 0) - parseFloat(a.price || a.Price || 0);
         case "name":
-          return a.name.localeCompare(b.name);
+          const nameA = a.name || a.Title || '';
+          const nameB = b.name || b.Title || '';
+          return nameA.localeCompare(nameB);
         default:
           return 0;
       }
@@ -239,14 +296,14 @@ const Product = ({
 
     // Category filter (sidebar)
     if (selectedCategory && selectedCategory !== "All Products") {
-      filtered = filtered.filter(p => (p.category || "Other") === selectedCategory);
+      filtered = filtered.filter(p => (p.category || p.Cat || "Other") === selectedCategory);
     }
 
     return filtered;
   };
 
   const filteredProducts = getFilteredProducts();
-  
+
   // Pagination
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -270,13 +327,24 @@ const Product = ({
     return stars;
   };
 
-  // Enhanced ProductCard with QuickView integration
+  // Enhanced ProductCard dengan fleksibilitas struktur data
   const ProductCard = ({ product, index }) => {
     const [isCardHovered, setIsCardHovered] = useState(false);
     const isFavorite = favorites.has(product.id);
     
-    // Use product.name, product.price, and product.image from DB
-    const imgSrc = imageMap[product.image] || ""; // fallback if not found
+    // Fleksibel untuk kedua struktur data
+    const productName = product.name || product.Title || 'Unnamed Product';
+    const productPrice = product.price || product.Price || '0';
+    const productCategory = product.category || product.Cat || 'Other';
+    const productImage = product.image || product.Img;
+    
+    // Untuk produk dari HomeProduct, gunakan image directly, untuk backend gunakan imageMap
+    let imgSrc = '';
+    if (typeof productImage === 'string') {
+      imgSrc = imageMap[productImage] || productImage;
+    } else {
+      imgSrc = productImage;
+    }
 
     return (
       <div 
@@ -289,9 +357,13 @@ const Product = ({
           <div className="product-image-container">
             <img 
               src={imgSrc}
-              alt={product.name}
+              alt={productName}
               className="product-image"
               loading="lazy"
+              onError={(e) => {
+                console.log('Image failed to load:', imgSrc);
+                e.target.src = '/placeholder-image.jpg'; // fallback image
+              }}
             />
             
             {/* Enhanced Product Badges */}
@@ -332,17 +404,17 @@ const Product = ({
                 className="quick-view-button"
                 onClick={() => handleQuickView(product)}
               >
-                <BsEye /> Quick View
+                {product.Cat || product.category}
               </button>
             </div>
           </div>
         </div>
         
         <div className="product-content">
-          <div className="product-category-tag">{product.category || "Product"}</div>
-          <h3 className="product-title">{product.name}</h3>
+          <div className="product-category-tag">{productCategory}</div>
+          <h3 className="product-title">{productName}</h3>
           <div className="product-price-section">
-            <span className="current-price">${product.price}</span>
+            <span className="current-price">${productPrice}</span>
           </div>
         </div>
       </div>
@@ -472,29 +544,29 @@ const Product = ({
               <div className="product-detail-enhanced" key={product.id}>
                 <div className="detail-image-section">
                   <div className="main-image">
-                    <img src={product.Img} alt={product.Title} />
+                    <img src={product.Img || product.image} alt={product.Title || product.name} />
                     <div className="image-zoom-indicator">🔍 Click to zoom</div>
                   </div>
                   <div className="thumbnail-images">
                     {[1,2,3,4].map(i => (
-                      <img key={i} src={product.Img} alt={`View ${i}`} className="thumbnail" />
+                      <img key={i} src={product.Img || product.image} alt={`View ${i}`} className="thumbnail" />
                     ))}
                   </div>
                 </div>
                 <div className="detail-info-section">
                   <div className="product-breadcrumb">
-                    Home / Products / {product.Cat} / {product.Title}
+                    Home / Products / {product.Cat || product.category} / {product.Title || product.name}
                   </div>
-                  <div className="product-category-badge">{product.Cat}</div>
-                  <h1 className="product-title-enhanced">{product.Title}</h1>
+                  <div className="product-category-badge">{product.Cat || product.category}</div>
+                  <h1 className="product-title-enhanced">{product.Title || product.name}</h1>
                   <div className="product-rating-enhanced">
                     <div className="stars">{renderStars()}</div>
                     <span className="rating-text">(4.5 stars • 128 reviews)</span>
                     <a href="#reviews" className="view-reviews">View all reviews</a>
                   </div>
                   <div className="product-price-enhanced">
-                    <span className="current-price">${product.Price}</span>
-                    <span className="original-price">${(parseFloat(product.Price) * 1.2).toFixed(0)}</span>
+                    <span className="current-price">${product.Price || product.price}</span>
+                    <span className="original-price">${(parseFloat(product.Price || product.price) * 1.2).toFixed(0)}</span>
                     <span className="discount-badge">Save 20%</span>
                   </div>
                   <div className="product-features-enhanced">
@@ -654,7 +726,7 @@ const Product = ({
                 <option value="price-high">Price: High to Low</option>
               </select>
             </div>
-            
+
             <div className="view-toggle-modern">
               <button 
                 className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
