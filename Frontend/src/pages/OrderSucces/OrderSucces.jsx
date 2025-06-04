@@ -8,16 +8,17 @@ const OrderSuccess = () => {
   const [orderData, setOrderData] = useState(null);
   
   useEffect(() => {
-    // Ambil data pesanan dari localStorage atau state
-    const latestOrder = JSON.parse(localStorage.getItem("transaksiHP") || "[]")[0];
-    if (latestOrder) {
-      setOrderData(latestOrder);
-      
-      // Simpan ke admin orders jika belum ada
-      saveToAdminOrders(latestOrder);
-    }
-  }, []);
-
+  const latestOrder = JSON.parse(localStorage.getItem("transaksiHP") || "[]")[0];
+  if (latestOrder) {
+    const orderWithValidDate = {
+      ...latestOrder,
+      date: latestOrder.date || new Date().toISOString()
+    };
+    
+    setOrderData(orderWithValidDate);
+    saveToAdminOrders(orderWithValidDate);
+  }
+}, []);
   const saveToAdminOrders = (orderData) => {
     try {
       // Ambil data orders admin yang sudah ada
@@ -27,6 +28,15 @@ const OrderSuccess = () => {
       const orderExists = existingAdminOrders.some(order => order.id === orderData.id);
       
       if (!orderExists) {
+        const currentDate = new Date();
+      let formattedDate;
+      
+      if (orderData.date) {
+        const existingDate = new Date(orderData.date);
+        formattedDate = isNaN(existingDate.getTime()) ? currentDate.toISOString() : existingDate.toISOString();
+      } else {
+        formattedDate = currentDate.toISOString();
+      }
         // Format data untuk admin dashboard
         const adminOrderData = {
           id: orderData.id,
