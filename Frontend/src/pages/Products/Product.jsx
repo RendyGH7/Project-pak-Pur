@@ -1,14 +1,59 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { AiOutlineShoppingCart, AiOutlineHeart, AiFillHeart, AiOutlineCloseCircle } from "react-icons/ai";
 import { BsEye, BsStarFill, BsStar, BsGrid3X3Gap, BsList, BsFilter } from "react-icons/bs";
 import { FiSearch, FiChevronDown, FiTruck, FiShield, FiAward } from "react-icons/fi";
 import { MdSort, MdViewModule, MdViewList, MdZoomIn, MdVerified } from "react-icons/md";
 import { useAuth0 } from "@auth0/auth0-react";
-import Homeproduct from "../../components/HomeProduct/HomeProducts";
 import QuickView from "../../components/QuickView/QuickView"; // Import komponen QuickView
 import Notification from "../../utils/Notification/Notification";
 import { useNotification } from "../../hook/useNotification";
 import "./Product.css";
+// Importing images for products
+import ip16Image from "../../assets/images/ip 16.jpg";
+import ip13 from "../../assets/images/ip13.jpg";
+import zfold from "../../assets/images/zfold.jpg";
+import zfold6 from "../../assets/images/zfold6.jpg";
+import huawei from "../../assets/images/huawei.jpg";
+import oppo2 from "../../assets/images/oppo2.jpg";
+import samsung from "../../assets/images/samsung.jpg";
+import samsung3 from "../../assets/images/samsung3.jpg";
+import huawei3 from "../../assets/images/huawei3.jpg";
+import vivo7 from "../../assets/images/vivo7.jpg";
+import vivo2 from "../../assets/images/vivo2.jpg";
+import vivo4 from "../../assets/images/vivo4.jpg";
+import zfold3 from "../../assets/images/zfold3.jpg";
+import oppo1 from "../../assets/images/oppo1.jpg";
+import oppo3 from "../../assets/images/oppo3.jpg";
+import oppo4 from "../../assets/images/oppo4.jpg";
+import samsung6 from "../../assets/images/samsung6.jpg";
+import huawei4 from "../../assets/images/huawei4.jpg";
+import samsung4 from "../../assets/images/samsung4.jpg";
+import ipx from "../../assets/images/ipx.jpg";
+
+
+
+const imageMap = {
+  "ip 16.jpg" : ip16Image,
+  "ip 13.jpg" : ip13,
+  "zffold.jpg" : zfold,
+  "zfold6.jpg" : zfold6,
+  "huawei.jpg" : huawei,
+  "oppo2.jpg" : oppo2,
+  "samsung.jpg" : samsung,
+  "samsung3.jpg" : samsung3,
+  "huawei3.jpg" : huawei3,
+  "vivo7.jpg" : vivo7,
+  "vivo2.jpg" : vivo2,
+  "vivo4.jpg" : vivo4,
+  "zfold3.jpg" : zfold3,
+  "oppo1.jpg" : oppo1,
+  "oppo3.jpg" : oppo3,
+  "oppo4.jpg" : oppo4,
+  "samsung6.jpg" : samsung6,
+  "huawei4.jpg" : huawei4,
+  "samsung4.jpg" : samsung4,
+  "ipx.jpg" : ipx
+};
 
 const Product = ({
   product,
@@ -19,9 +64,20 @@ const Product = ({
   setClose,
   addtocart,
 }) => {
+  const [products, setProducts] = useState([]);
   const { loginWithRedirect, isAuthenticated } = useAuth0();
   const { notifications, showNotification, removeNotification } = useNotification();
   
+  useEffect(() => {
+  fetch('http://localhost/Project-pak-Pur/Backend/api/products.php')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      setProducts(data.products || []);
+      setProduct(data.products || []); // If you want to use setProduct for filtering
+    });
+}, []);
+
   // Enhanced state management
   const [favorites, setFavorites] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,18 +101,19 @@ const Product = ({
   
   // Categories with counts
   const categories = [
-    { name: "All Products", count: Homeproduct.length },
-    { name: "Vivo", count: Homeproduct.filter(p => p.Cat === "Vivo").length },
-    { name: "Iphone", count: Homeproduct.filter(p => p.Cat === "Iphone").length },
-    { name: "Samsung", count: Homeproduct.filter(p => p.Cat === "Samsung").length },
-    { name: "Zfold", count: Homeproduct.filter(p => p.Cat === "Zfold").length },
-    { name: "Oppo", count: Homeproduct.filter(p => p.Cat === "Oppo").length },
-    { name: "Huawei", count: Homeproduct.filter(p => p.Cat === "Huawei").length },
+    { name: "All Products", count: products.length },
+    ...Array.from(
+      products.reduce((acc, p) => {
+        const cat = p.category || "Other";
+        acc.set(cat, (acc.get(cat) || 0) + 1);
+        return acc;
+      }, new Map())
+    ).map(([name, count]) => ({ name, count }))
   ];
 
   const handleAddToCart = (product) => {
     addtocart(product);
-    showNotification('success', `🛒 ${product.Title} berhasil ditambahkan ke keranjang!`, 3000);
+    showNotification('success', `🛒 ${product.name} berhasil ditambahkan ke keranjang!`, 3000);
   };
 
   const toggleFavorite = (productId) => {
@@ -102,21 +159,14 @@ const Product = ({
     setIsLoading(true);
     setSelectedCategory(category);
     setCurrentPage(1);
-    
+
     setTimeout(() => {
-      if (category === "All Products") {
-        setProduct(Homeproduct);
-      } else {
-        const filtered = Homeproduct.filter((x) => x.Cat === category);
-        setProduct(filtered);
-      }
       setIsLoading(false);
     }, 300);
   };
-  
+
   const AllProducts = () => {
     setSelectedCategory("All Products");
-    setProduct(Homeproduct);
     setCurrentPage(1);
   };
 
@@ -124,12 +174,12 @@ const Product = ({
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    
+
     if (value.length > 0) {
-      const suggestions = Homeproduct
-        .filter(p => p.Title.toLowerCase().includes(value.toLowerCase()))
+      const suggestions = products
+        .filter(p => p.name && p.name.toLowerCase().includes(value.toLowerCase()))
         .slice(0, 5)
-        .map(p => p.Title);
+        .map(p => p.name);
       setSearchSuggestions(suggestions);
       setShowSuggestions(true);
     } else {
@@ -152,41 +202,46 @@ const Product = ({
 
   // Enhanced filtering and sorting
   const getFilteredProducts = () => {
-    let filtered = [...product];
-    
+    let filtered = [...products];
+
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(p => 
-        p.Title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.Cat.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(p =>
+        (p.name && p.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
-    
+
     // Price range filter
     filtered = filtered.filter(p => {
-      const price = parseFloat(p.Price);
+      const price = parseFloat(p.price);
       return price >= priceRange[0] && price <= priceRange[1];
     });
-    
-    // Brand filter
+
+    // Brand/category filter
     if (selectedBrands.size > 0) {
-      filtered = filtered.filter(p => selectedBrands.has(p.Cat));
+      filtered = filtered.filter(p => selectedBrands.has(p.category));
     }
-    
+
     // Sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "price-low":
-          return parseFloat(a.Price) - parseFloat(b.Price);
+          return parseFloat(a.price) - parseFloat(b.price);
         case "price-high":
-          return parseFloat(b.Price) - parseFloat(a.Price);
+          return parseFloat(b.price) - parseFloat(a.price);
         case "name":
-          return a.Title.localeCompare(b.Title);
+          return a.name.localeCompare(b.name);
         default:
           return 0;
       }
     });
-    
+
+    // Category filter (sidebar)
+    if (selectedCategory && selectedCategory !== "All Products") {
+      filtered = filtered.filter(p => (p.category || "Other") === selectedCategory);
+    }
+
     return filtered;
   };
 
@@ -220,6 +275,9 @@ const Product = ({
     const [isCardHovered, setIsCardHovered] = useState(false);
     const isFavorite = favorites.has(product.id);
     
+    // Use product.name, product.price, and product.image from DB
+    const imgSrc = imageMap[product.image] || ""; // fallback if not found
+
     return (
       <div 
         className={`product-card-modern ${viewMode === 'list' ? 'list-view' : ''} ${isCardHovered ? 'hovered' : ''}`}
@@ -230,8 +288,8 @@ const Product = ({
         <div className="product-image-wrapper">
           <div className="product-image-container">
             <img 
-              src={product.Img} 
-              alt={product.Title}
+              src={imgSrc}
+              alt={product.name}
               className="product-image"
               loading="lazy"
             />
@@ -281,22 +339,11 @@ const Product = ({
         </div>
         
         <div className="product-content">
-          <div className="product-category-tag">{product.Cat}</div>
-          <h3 className="product-title">{product.Title}</h3>
-          <div className="product-rating">
-            <div className="rating-stars">{renderStars()}</div>
-            <span className="rating-text">(4.5 • {Math.floor(Math.random() * 200) + 50})</span>
-          </div>
+          <div className="product-category-tag">{product.category || "Product"}</div>
+          <h3 className="product-title">{product.name}</h3>
           <div className="product-price-section">
-            <span className="current-price">${product.Price}</span>
-            <span className="original-price">${(parseFloat(product.Price) * 1.2).toFixed(0)}</span>
-            <span className="discount-tag">20% OFF</span>
+            <span className="current-price">${product.price}</span>
           </div>
-          {viewMode === 'list' && (
-            <div className="product-description">
-              Experience cutting-edge technology with premium features and exceptional performance.
-            </div>
-          )}
         </div>
       </div>
     );

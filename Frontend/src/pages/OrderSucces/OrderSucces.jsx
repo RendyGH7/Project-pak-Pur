@@ -3,20 +3,94 @@ import { Link } from 'react-router-dom';
 import { AiOutlineCheckCircle, AiOutlineShoppingCart, AiOutlinePrinter } from 'react-icons/ai';
 import { BsCalendar, BsPhone, BsGeoAlt, BsCreditCard } from 'react-icons/bs';
 import './OrderSucces.css';
+// Importing images for products
+import ip16Image from "../../assets/images/ip 16.jpg";
+import ip13 from "../../assets/images/ip13.jpg";
+import zfold from "../../assets/images/zfold.jpg";
+import zfold6 from "../../assets/images/zfold6.jpg";
+import huawei from "../../assets/images/huawei.jpg";
+import oppo2 from "../../assets/images/oppo2.jpg";
+import samsung from "../../assets/images/samsung.jpg";
+import samsung3 from "../../assets/images/samsung3.jpg";
+import huawei3 from "../../assets/images/huawei3.jpg";
+import vivo7 from "../../assets/images/vivo7.jpg";
+import vivo2 from "../../assets/images/vivo2.jpg";
+import vivo4 from "../../assets/images/vivo4.jpg";
+import zfold3 from "../../assets/images/zfold3.jpg";
+import oppo1 from "../../assets/images/oppo1.jpg";
+import oppo3 from "../../assets/images/oppo3.jpg";
+import oppo4 from "../../assets/images/oppo4.jpg";
+import samsung6 from "../../assets/images/samsung6.jpg";
+import huawei4 from "../../assets/images/huawei4.jpg";
+import samsung4 from "../../assets/images/samsung4.jpg";
+import ipx from "../../assets/images/ipx.jpg";
+
+
+
+const imageMap = {
+  "ip 16.jpg" : ip16Image,
+  "ip 13.jpg" : ip13,
+  "zffold.jpg" : zfold,
+  "zfold6.jpg" : zfold6,
+  "huawei.jpg" : huawei,
+  "oppo2.jpg" : oppo2,
+  "samsung.jpg" : samsung,
+  "samsung3.jpg" : samsung3,
+  "huawei3.jpg" : huawei3,
+  "vivo7.jpg" : vivo7,
+  "vivo2.jpg" : vivo2,
+  "vivo4.jpg" : vivo4,
+  "zfold3.jpg" : zfold3,
+  "oppo1.jpg" : oppo1,
+  "oppo3.jpg" : oppo3,
+  "oppo4.jpg" : oppo4,
+  "samsung6.jpg" : samsung6,
+  "huawei4.jpg" : huawei4,
+  "samsung4.jpg" : samsung4,
+  "ipx.jpg" : ipx
+};
 
 const OrderSuccess = () => {
   const [orderData, setOrderData] = useState(null);
-  
+
   useEffect(() => {
-    // Ambil data pesanan dari localStorage atau state
     const latestOrder = JSON.parse(localStorage.getItem("transaksiHP") || "[]")[0];
     if (latestOrder) {
       setOrderData(latestOrder);
-      
-      // Simpan ke admin orders jika belum ada
+
+      // Send to backend
+      sendOrderToBackend(latestOrder);
+
+      // (Optional) Still save to admin orders in localStorage
       saveToAdminOrders(latestOrder);
     }
   }, []);
+
+  // Function to send order to backend
+  const sendOrderToBackend = async (order) => {
+    try {
+      // If you have user authentication, get userId from context or localStorage
+      const userId = order.userId || 1; // Replace with actual user ID if available
+
+      const response = await fetch('http://localhost/Project-pak-Pur/Backend/api/order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          orderDetails: order
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error('Gagal menyimpan order ke backend:', data.message);
+      } else {
+        console.log('Order berhasil disimpan ke backend:', data.message);
+      }
+    } catch (error) {
+      console.error('Error sending order to backend:', error);
+    }
+  };
 
   const saveToAdminOrders = (orderData) => {
     try {
@@ -167,15 +241,15 @@ const OrderSuccess = () => {
             {orderData.items.map((item, index) => (
               <div key={index} className="item-card">
                 <div className="item-image">
-                  <img src={item.Img} alt={item.Title} />
+                  <img src={imageMap[item.image]} alt={item.name} />
                 </div>
                 <div className="item-details">
-                  <h4>{item.Title}</h4>
-                  <p className="item-category">{item.Cat}</p>
+                  <h4>{item.name}</h4>
+                  <p className="item-category">{item.category}</p>
                   <div className="item-price-qty">
-                    <span className="item-price">${item.Price}</span>
+                    <span className="item-price">${item.price}</span>
                     <span className="item-qty">x {item.qty || 1}</span>
-                    <span className="item-subtotal">${item.Price * (item.qty || 1)}</span>
+                    <span className="item-subtotal">${(item.price * (item.qty || 1)).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
