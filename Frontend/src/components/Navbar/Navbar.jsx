@@ -2,6 +2,7 @@ import "./Navbar.css";
 import React, { useState, useEffect } from 'react'
 import { FaTruckMoving, FaSearch } from 'react-icons/fa';
 import { BsBagCheck } from 'react-icons/bs';
+import { FaClipboardList } from 'react-icons/fa';
 import { AiOutlineUser, AiOutlineMenu, AiOutlineClose } from 'react-icons/ai';
 import { CiLogin, CiLogout } from 'react-icons/ci';
 import { Link } from 'react-router-dom';
@@ -119,7 +120,14 @@ const Nav = ({searchbtn}) => {
                         <Link to="/cart" className='cart-link'>
                             <div className='cart-icon'>
                                 <BsBagCheck />
-                                <span className='cart-badge'>0</span>
+                                <span className='cart-badge'></span>
+                            </div>
+                        </Link>
+
+                        <Link to="/orders" className='cart-link'>
+                            <div className='cart-icon'>
+                                <FaClipboardList />
+                                <span className='cart-badge'></span>
                             </div>
                         </Link>
 
