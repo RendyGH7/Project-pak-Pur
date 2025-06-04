@@ -6,6 +6,50 @@ import { Link } from 'react-router-dom';
 import Notification from '../../utils/Notification/Notification';
 import { useNotification } from '../../hook/useNotification';
 import './Cart.css'
+// Importing images for products
+import ip16Image from "../../assets/images/ip 16.jpg";
+import ip13 from "../../assets/images/ip13.jpg";
+import zfold from "../../assets/images/zfold.jpg";
+import zfold6 from "../../assets/images/zfold6.jpg";
+import huawei from "../../assets/images/huawei.jpg";
+import oppo2 from "../../assets/images/oppo2.jpg";
+import samsung from "../../assets/images/samsung.jpg";
+import samsung3 from "../../assets/images/samsung3.jpg";
+import huawei3 from "../../assets/images/huawei3.jpg";
+import vivo7 from "../../assets/images/vivo7.jpg";
+import vivo2 from "../../assets/images/vivo2.jpg";
+import vivo4 from "../../assets/images/vivo4.jpg";
+import zfold3 from "../../assets/images/zfold3.jpg";
+import oppo1 from "../../assets/images/oppo1.jpg";
+import oppo3 from "../../assets/images/oppo3.jpg";
+import oppo4 from "../../assets/images/oppo4.jpg";
+import samsung6 from "../../assets/images/samsung6.jpg";
+import huawei4 from "../../assets/images/huawei4.jpg";
+import samsung4 from "../../assets/images/samsung4.jpg";
+import ipx from "../../assets/images/ipx.jpg";
+
+const imageMap = {
+  "ip 16.jpg": ip16Image,
+  "ip13.jpg": ip13,
+  "zfold.jpg": zfold,
+  "zfold6.jpg": zfold6,
+  "huawei.jpg": huawei,
+  "oppo2.jpg": oppo2,
+  "samsung.jpg": samsung,
+  "samsung3.jpg": samsung3,
+  "huawei3.jpg": huawei3,
+  "vivo7.jpg": vivo7,
+  "vivo2.jpg": vivo2,
+  "vivo4.jpg": vivo4,
+  "zfold3.jpg": zfold3,
+  "oppo1.jpg": oppo1,
+  "oppo3.jpg": oppo3,
+  "oppo4.jpg": oppo4,
+  "samsung6.jpg": samsung6,
+  "huawei4.jpg": huawei4,
+  "samsung4.jpg": samsung4,
+  "ipx.jpg": ipx
+};
 
 const Cart = ({cart, setCart}) => {
     const { notifications, showNotification, removeNotification } = useNotification();
@@ -17,7 +61,7 @@ const Cart = ({cart, setCart}) => {
     const [recentlyViewed, setRecentlyViewed] = useState([]);
 
     // Calculate totals
-    const subtotal = cart.reduce((price, item) => price + item.qty * item.Price, 0);
+    const subtotal = cart.reduce((price, item) => price + item.qty * item.price, 0);
     const shipping = subtotal > 100 ? 0 : 15;
     const discount = subtotal > 200 ? subtotal * 0.1 : 0;
     const total = subtotal + shipping - discount;
@@ -72,7 +116,7 @@ const Cart = ({cart, setCart}) => {
             curElm.id === product.id ? {...exist, qty: exist.qty + 1} : curElm
         ));
         animateItem(product.id);
-        showNotification('success', `✨ ${product.Title} ditambah! Qty: ${exist.qty + 1}`, 2000);
+        showNotification('success', `✨ ${product.name} ditambah! Qty: ${exist.qty + 1}`, 2000);
     }
 
     // Decrease quantity
@@ -83,7 +127,7 @@ const Cart = ({cart, setCart}) => {
                 curElm.id === product.id ? {...exist, qty: exist.qty - 1} : curElm
             ));
             animateItem(product.id);
-            showNotification('info', `📉 ${product.Title} dikurangi! Qty: ${exist.qty - 1}`, 2000);
+            showNotification('info', `📉 ${product.name} dikurangi! Qty: ${exist.qty - 1}`, 2000);
         } else {
             showNotification('warning', '⚠️ Kuantitas minimal adalah 1!', 2000);
         }
@@ -92,21 +136,21 @@ const Cart = ({cart, setCart}) => {
     // Remove product from cart
     const removeproduct = (product) => {
         setCart(cart.filter((x) => x.id !== product.id));
-        showNotification('success', `🗑️ ${product.Title} dihapus dari keranjang!`, 3000);
+        showNotification('success', `🗑️ ${product.name} dihapus dari keranjang!`, 3000);
     }
 
     // Save for later
     const saveForLater = (product) => {
         setSavedItems([...savedItems, product]);
         removeproduct(product);
-        showNotification('info', `💾 ${product.Title} disimpan untuk nanti!`, 3000);
+        showNotification('info', `💾 ${product.name} disimpan untuk nanti!`, 3000);
     }
 
     // Move back to cart
     const moveToCart = (product) => {
         setCart([...cart, {...product, qty: 1}]);
         setSavedItems(savedItems.filter(item => item.id !== product.id));
-        showNotification('success', `🛒 ${product.Title} dipindah ke keranjang!`, 3000);
+        showNotification('success', `🛒 ${product.name} dipindah ke keranjang!`, 3000);
     }
 
     // Clear entire cart
@@ -186,15 +230,15 @@ const Cart = ({cart, setCart}) => {
                                     className={`cart-item ${animatingItems.has(item.id) ? 'animating' : ''}`}
                                 >
                                     <div className='item-image'>
-                                        <img src={item.Img} alt={item.Title} />
+                                        <img src={imageMap[item.image]} alt={item.name} />
                                         <div className='item-badge'>New</div>
                                     </div>
                                     
                                     <div className='item-details'>
                                         <div className='item-info'>
                                             <span className='item-category'>{item.Cat}</span>
-                                            <h4 className='item-title'>{item.Title}</h4>
-                                            <p className='item-price'>${item.Price}</p>
+                                            <h4 className='item-title'>{item.name}</h4>
+                                            <p className='item-price'>${item.price}</p>
                                         </div>
                                         
                                         <div className='item-actions'>
@@ -216,7 +260,7 @@ const Cart = ({cart, setCart}) => {
                                             </div>
                                             
                                             <div className='item-total'>
-                                                <span className='total-price'>${(item.Price * item.qty).toFixed(2)}</span>
+                                                <span className='total-price'>${(item.price * item.qty).toFixed(2)}</span>
                                             </div>
                                         </div>
                                         
