@@ -89,143 +89,87 @@ const Login = ({ isOpen, onClose, onLoginSuccess }) => {
   }
 
   const createUserProfile = (userData) => {
+    // Use only fields returned by backend, add defaults if needed
     const userProfile = {
       id: userData.id,
       name: userData.name,
-      username: userData.name.toLowerCase().replace(/\s+/g, ''),
       email: userData.email,
-      location: '',
-      bio: '',
-      website: '',
-      phone: '',
-      birthdate: '',
-      gender: '',
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=667eea&color=fff&size=200`,
-      theme: 'gradient',
-      social: {
-        instagram: '',
-        facebook: '',
-        twitter: '',
-        linkedin: '',
-        youtube: ''
-      },
-      preferences: {
-        language: 'id',
-        timezone: 'Asia/Jakarta',
-        currency: 'IDR'
-      },
-      stats: {
-        orders: 0,
-        reviews: 0,
-        wishlist: 0,
-        points: 100
-      },
+      avatar: userData.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || '')}&background=667eea&color=fff&size=200`,
+      // Add more fields if your backend returns them
       createdAt: userData.createdAt || new Date().toISOString(),
       lastLogin: new Date().toISOString()
-    }
-    
+    };
+
     // Save to localStorage
-    localStorage.setItem('currentUser', JSON.stringify(userData))
-    localStorage.setItem('userProfile', JSON.stringify(userProfile))
-    localStorage.setItem('isLoggedIn', 'true')
-    
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    localStorage.setItem('isLoggedIn', 'true');
+
     if (rememberMe) {
-      localStorage.setItem('rememberMe', 'true')
-      localStorage.setItem('rememberedEmail', userData.email)
+      localStorage.setItem('rememberMe', 'true');
+      localStorage.setItem('rememberedEmail', userData.email);
     }
-    
+
     // Dispatch event for other components
     window.dispatchEvent(new CustomEvent('userLoggedIn', {
       detail: { user: userData, profile: userProfile }
-    }))
-    
-    return userProfile
+    }));
+
+    return userProfile;
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (!validateForm()) return
+  e.preventDefault();
 
-    setIsLoading(true)
-    setLoginError(null)
-    setSuccessMessage(null)
+  if (!validateForm()) return;
 
-    try {
-      // Simulate API call with realistic delay
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000))
+  setIsLoading(true);
+  setLoginError(null);
+  setSuccessMessage(null);
 
-      if (isSignUp) {
-        // Register logic
-        const users = JSON.parse(localStorage.getItem('users') || '[]')
-        const existingUser = users.find(user => user.email.toLowerCase() === formData.email.toLowerCase())
-        
-        if (existingUser) {
-          setLoginError('Email sudah terdaftar. Silakan gunakan email lain atau masuk dengan akun yang ada.')
-          setIsLoading(false)
-          return
+  try {
+    const endpoint = isSignUp
+      ? 'http://localhost/Project-pak-pur/Backend/api/register.php'
+      : 'http://localhost/Project-pak-pur/Backend/api/login.php';
+
+    const payload = isSignUp
+      ? {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
         }
+      : {
+          email: formData.email,
+          password: formData.password,
+        };
 
-        const newUser = {
-          id: Date.now() + Math.random(),
-          name: formData.name.trim(),
-          email: formData.email.toLowerCase(),
-          password: formData.password, // In real app, this should be hashed
-          createdAt: new Date().toISOString(),
-          isVerified: true
-        }
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-        users.push(newUser)
-        localStorage.setItem('users', JSON.stringify(users))
-        
-        setSuccessMessage(`Akun berhasil dibuat! Selamat datang, ${newUser.name}`)
-        
-        // Auto login after successful registration
-        setTimeout(() => {
-          const userProfile = createUserProfile(newUser)
-          const userData = { id: newUser.id, name: newUser.name, email: newUser.email }
-          onLoginSuccess(userData)
-        }, 1500)
-        
-      } else {
-        // Login logic
-        const users = JSON.parse(localStorage.getItem('users') || '[]')
-        const user = users.find(u => 
-          u.email.toLowerCase() === formData.email.toLowerCase() && 
-          u.password === formData.password
-        )
-        
-        if (!user) {
-          setLoginError('Email atau password salah. Periksa kembali kredensial Anda.')
-          setIsLoading(false)
-          return
-        }
+    const data = await response.json();
 
-        // Update last login
-        user.lastLogin = new Date().toISOString()
-        const userIndex = users.findIndex(u => u.id === user.id)
-        users[userIndex] = user
-        localStorage.setItem('users', JSON.stringify(users))
-        
-        setSuccessMessage(`Selamat datang kembali, ${user.name}!`)
-        
-        // Login success
-        setTimeout(() => {
-          const userProfile = createUserProfile(user)
-          const userData = { id: user.id, name: user.name, email: user.email }
-          onLoginSuccess(userData)
-        }, 1000)
-      }
-
-    } catch (error) {
-      console.error('Login/Register error:', error)
-      setLoginError('Terjadi kesalahan sistem. Silakan coba lagi dalam beberapa saat.')
-    } finally {
-      if (!successMessage) {
-        setIsLoading(false)
-      }
+    if (!response.ok) {
+      setLoginError(data.message || 'Terjadi kesalahan. Coba lagi.');
+      setIsLoading(false);
+      return;
     }
+
+    setSuccessMessage(data.message || (isSignUp ? 'Akun berhasil dibuat!' : 'Login berhasil!'));
+
+    // Save user data, handle rememberMe, etc.
+    createUserProfile(data.user); // adjust based on your backend response
+    onLoginSuccess(data.user);
+
+  } catch (error) {
+    setLoginError('Terjadi kesalahan sistem. Silakan coba lagi.');
+  } finally {
+    setIsLoading(false);
   }
+};
 
   const handleSocialLogin = (provider) => {
     setLoginError(null)

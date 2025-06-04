@@ -6,6 +6,53 @@ import { BsCreditCard, BsShieldCheck, BsTruck, BsCheckCircle, BsExclamationTrian
 import { AiOutlineLoading3Quarters, AiOutlineUser, AiOutlineHome, AiOutlinePhone } from "react-icons/ai";
 import { FaLock, FaGift, FaShippingFast } from "react-icons/fa";
 import "./payment.css";
+// Importing images for products
+import ip16Image from "../../assets/images/ip 16.jpg";
+import ip13 from "../../assets/images/ip13.jpg";
+import zfold from "../../assets/images/zfold.jpg";
+import zfold6 from "../../assets/images/zfold6.jpg";
+import huawei from "../../assets/images/huawei.jpg";
+import oppo2 from "../../assets/images/oppo2.jpg";
+import samsung from "../../assets/images/samsung.jpg";
+import samsung3 from "../../assets/images/samsung3.jpg";
+import huawei3 from "../../assets/images/huawei3.jpg";
+import vivo7 from "../../assets/images/vivo7.jpg";
+import vivo2 from "../../assets/images/vivo2.jpg";
+import vivo4 from "../../assets/images/vivo4.jpg";
+import zfold3 from "../../assets/images/zfold3.jpg";
+import oppo1 from "../../assets/images/oppo1.jpg";
+import oppo3 from "../../assets/images/oppo3.jpg";
+import oppo4 from "../../assets/images/oppo4.jpg";
+import samsung6 from "../../assets/images/samsung6.jpg";
+import huawei4 from "../../assets/images/huawei4.jpg";
+import samsung4 from "../../assets/images/samsung4.jpg";
+import ipx from "../../assets/images/ipx.jpg";
+
+
+
+const imageMap = {
+  "ip 16.jpg" : ip16Image,
+  "ip 13.jpg" : ip13,
+  "zffold.jpg" : zfold,
+  "zfold6.jpg" : zfold6,
+  "huawei.jpg" : huawei,
+  "oppo2.jpg" : oppo2,
+  "samsung.jpg" : samsung,
+  "samsung3.jpg" : samsung3,
+  "huawei3.jpg" : huawei3,
+  "vivo7.jpg" : vivo7,
+  "vivo2.jpg" : vivo2,
+  "vivo4.jpg" : vivo4,
+  "zfold3.jpg" : zfold3,
+  "oppo1.jpg" : oppo1,
+  "oppo3.jpg" : oppo3,
+  "oppo4.jpg" : oppo4,
+  "samsung6.jpg" : samsung6,
+  "huawei4.jpg" : huawei4,
+  "samsung4.jpg" : samsung4,
+  "ipx.jpg" : ipx
+};
+
 
 const Payment = ({ cart, setCart }) => {
   const [form, setForm] = useState({
@@ -21,7 +68,7 @@ const Payment = ({ cart, setCart }) => {
   const navigate = useNavigate();
   const { notifications, showNotification, removeNotification } = useNotification();
 
-  const totalPrice = cart.reduce((price, item) => price + item.qty * item.Price, 0);
+  const totalPrice = cart.reduce((price, item) => price + item.qty * item.price, 0);
   const savings = Math.floor(totalPrice * 0.1); // 10% savings simulation
 
   // Real-time validation
@@ -227,14 +274,14 @@ const Payment = ({ cart, setCart }) => {
                 <div className="order-items">
                   {cart.map((item, index) => (
                     <div key={item.id} className="order-item" style={{animationDelay: `${index * 0.1}s`}}>
-                      <img src={item.Img} alt={item.Title} className="item-image" />
+                      <img src={imageMap[item.image]} alt={item.name} className="item-image" />
                       <div className="item-info">
-                        <h4>{item.Title}</h4>
+                        <h4>{item.name}</h4>
                         <p className="item-category">{item.Cat}</p>
                         <div className="item-pricing">
-                          <span className="item-price">${item.Price}</span>
+                          <span className="item-price">${item.price}</span>
                           <span className="item-qty">x {item.qty}</span>
-                          <span className="item-total">${item.Price * item.qty}</span>
+                          <span className="item-total">${item.price * item.qty}</span>
                         </div>
                       </div>
                     </div>
